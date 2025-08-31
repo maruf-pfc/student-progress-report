@@ -1,4 +1,5 @@
 import { Link, Outlet } from "react-router-dom";
+import { ModeToggle } from "./mode-toggle";
 
 const Layout = () => {
   return (
@@ -22,6 +23,8 @@ const Layout = () => {
             <Link to="/profile/101" className="hover:text-primary">
               My Profile
             </Link>
+
+            <ModeToggle />
           </nav>
         </div>
       </header>

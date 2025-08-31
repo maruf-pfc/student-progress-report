@@ -2,7 +2,6 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Trophy, User, Home } from "lucide-react";
-import { ModeToggle } from "./mode-toggle";
 import { currentUser } from "@/data/user";
 
 const Navigation = () => {
@@ -57,8 +56,6 @@ const Navigation = () => {
               </Button>
             );
           })}
-
-          <ModeToggle />
         </nav>
       </div>
     </Card>
