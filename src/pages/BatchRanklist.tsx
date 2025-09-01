@@ -26,6 +26,8 @@ const BatchRanklist = () => {
   const [sortField, setSortField] = useState<SortField>("rank");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   const batchStudents = useMemo(
     () => getBatchStudents(currentUser.batchId),
@@ -56,6 +58,12 @@ const BatchRanklist = () => {
       }
     });
   }, [filteredStudents, sortField, sortOrder]);
+
+  const totalPages = Math.ceil(sortedStudents.length / pageSize);
+  const paginatedStudents = sortedStudents.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -213,7 +221,7 @@ const BatchRanklist = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sortedStudents.map((student) => (
+                {paginatedStudents.map((student) => (
                   <TableRow
                     key={student.id}
                     className="hover:bg-muted/50 transition-colors cursor-pointer border-border/30"
@@ -279,6 +287,39 @@ const BatchRanklist = () => {
                 ))}
               </TableBody>
             </Table>
+
+            {/* Pagination Controls */}
+            <div className="flex justify-between items-center mt-6">
+              <Button
+                className={
+                  page === 1
+                    ? "cursor-not-allowed opacity-50"
+                    : "cursor-pointer"
+                }
+                variant="outline"
+                disabled={page === 1}
+                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              >
+                Previous
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Page {page} of {totalPages}
+              </span>
+              <Button
+                className={
+                  page === totalPages
+                    ? "cursor-not-allowed opacity-50"
+                    : "cursor-pointer"
+                }
+                variant="outline"
+                disabled={page === totalPages}
+                onClick={() =>
+                  setPage((prev) => Math.min(prev + 1, totalPages))
+                }
+              >
+                Next
+              </Button>
+            </div>
           </div>
         </Card>
       </div>

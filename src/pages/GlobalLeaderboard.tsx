@@ -16,6 +16,8 @@ import { globalStudents } from "@/data/students";
 
 const GlobalLeaderboard = () => {
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const studentsPerPage = 10;
 
   // Filter students by name or university
   const filteredStudents = globalStudents.filter((student) => {
@@ -26,8 +28,16 @@ const GlobalLeaderboard = () => {
     return nameMatch || uniMatch;
   });
 
-  const topPerformers = filteredStudents.slice(0, 3);
+  const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
 
+  // Paginate students
+  const startIndex = (page - 1) * studentsPerPage;
+  const paginatedStudents = filteredStudents.slice(
+    startIndex,
+    startIndex + studentsPerPage
+  );
+
+  const topPerformers = filteredStudents.slice(0, 3);
   const trophyColors = ["text-yellow-500", "text-gray-400", "text-amber-600"];
 
   return (
@@ -50,23 +60,11 @@ const GlobalLeaderboard = () => {
           </div>
         </div>
 
-        {/* Search Input */}
-        <div className="flex justify-center mb-6">
-          <input
-            type="text"
-            placeholder="Search by name or university..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full md:w-1/2 px-4 py-2 rounded-lg border border-border shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-          />
-        </div>
-
         {/* Top 3 Winners */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {topPerformers.map((student, index) => {
             const icons = [Trophy, Medal, Award];
             const IconComponent = icons[index];
-
             const colors = [
               "text-yellow-500",
               "text-gray-400",
@@ -123,6 +121,20 @@ const GlobalLeaderboard = () => {
           })}
         </div>
 
+        {/* Search Input */}
+        <div className="flex justify-center mb-6">
+          <input
+            type="text"
+            placeholder="Search by name or university..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1); // reset to page 1 after search
+            }}
+            className="w-full md:w-1/2 px-4 py-2 rounded-lg border border-border shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          />
+        </div>
+
         {/* Full Leaderboard Table */}
         <Card className="shadow-soft border-0">
           <CardHeader>
@@ -146,7 +158,7 @@ const GlobalLeaderboard = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredStudents.map((student) => (
+                  {paginatedStudents.map((student) => (
                     <TableRow
                       key={student.id}
                       className="hover:bg-muted/50 transition-colors"
@@ -214,6 +226,39 @@ const GlobalLeaderboard = () => {
                   ))}
                 </TableBody>
               </Table>
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex justify-between items-center mt-4">
+              <Button
+                className={
+                  page === 1
+                    ? "cursor-not-allowed opacity-50"
+                    : "cursor-pointer"
+                }
+                variant="outline"
+                disabled={page === 1}
+                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              >
+                Previous
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Page {page} of {totalPages}
+              </span>
+              <Button
+                className={`${
+                  page === totalPages
+                    ? "cursor-not-allowed opacity-50"
+                    : "cursor-pointer"
+                }`}
+                variant="outline"
+                disabled={page === totalPages}
+                onClick={() =>
+                  setPage((prev) => Math.min(prev + 1, totalPages))
+                }
+              >
+                Next
+              </Button>
             </div>
           </CardContent>
         </Card>
